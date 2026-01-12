@@ -1,30 +1,128 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+
+  // Import Components
+  import FooterComponent from './components/FooterComponent.vue'
+  import HeaderComponent from './components/HeaderComponent.vue'
+
+  // Import Depdencies
+  import { onMounted, onUnmounted, ref  } from 'vue'
+
+  // Declared Variables
+  const loading = ref<boolean>(true)
+  const scrollTop = ref<boolean>(false)
+  const mobileNav = ref<boolean>(false)
+  const bodyClasses = ref<Array<string>>(["d-flex", "flex-column", "min-vh-100"])
+  const toggledDropdown = ref<boolean>(false)
+  const section = ref<string>("home")
+  const sections = ref<Array<string>>(["hero", "about", "clients", "cards", "services", "call-to-action", "portfolio", "pricing", "faq", "team", "contact"])
+
+  const handleScroll = () => {
+
+    const position = window.scrollY + 200;
+
+    for (const id of sections.value) {
+      const sectionEl = document.getElementById(id) as HTMLElement | null
+      if (!sectionEl) continue
+
+      if (
+        position >= sectionEl.offsetTop &&
+        position <= sectionEl.offsetTop + sectionEl.offsetHeight
+      ) {
+        section.value = id
+        break
+      }
+    }
+
+    const scrolled = window.scrollY > 100
+    scrollTop.value = scrolled
+    if(scrolled){
+      bodyClasses.value.push("scrolled")
+      bodyClasses.value = [...new Set(bodyClasses.value)]
+    }else{
+      bodyClasses.value = bodyClasses.value.filter(item => item !== "scrolled")
+    }
+  }
+
+  const loadComponent = () => {
+     if (window.location.hash) {
+      if (document.querySelector(window.location.hash)) {
+        setTimeout(() => {
+          let section = document.querySelector(window.location.hash) as HTMLElement | null
+          if(section){
+            let scrollMarginTop = getComputedStyle(section).scrollMarginTop;
+            window.scrollTo({
+              top: section.offsetTop - parseInt(scrollMarginTop),
+              behavior: 'smooth'
+            });
+          }
+        }, 100);
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+  }
+
+  const mobileNavToogle = (event: MouseEvent) => {
+     event.preventDefault()
+     const toggled = !mobileNav.value
+     mobileNav.value = toggled
+     if(toggled){
+      bodyClasses.value.push("mobile-nav-active")
+      bodyClasses.value = [...new Set(bodyClasses.value)]
+    }else{
+      bodyClasses.value = bodyClasses.value.filter(item => item !== "mobile-nav-active")
+    }
+  }
+
+  const scrollToTop = (event: MouseEvent) => {
+     event.preventDefault()
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const toggledDropdownHandle = (event: MouseEvent) => {
+     event.preventDefault()
+     toggledDropdown.value = !toggledDropdown.value
+  }
+
+  onMounted(() => {
+    setTimeout(() => {
+        loadComponent()
+        loading.value = false
+    }, 1500)
+  })
+
+  onUnmounted(() => {
+     window.removeEventListener('scroll', handleScroll)
+  })
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+
+  <div :class="bodyClasses.join(' ')">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+      <HeaderComponent @toggledDropdown="toggledDropdownHandle" @mobileNavToogle="mobileNavToogle" :section="section"  :toggledDropdown="toggledDropdown" :mobileNav="mobileNav" />
+    </header>
+
+    <main class="main">
+       <router-view />
+    </main>
+
+    <footer id="footer" class="footer dark-background mt-auto">
+      <FooterComponent />
+    </footer>
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" @click.prevent="scrollToTop" :class="scrollTop ? 'scroll-top d-flex align-items-center justify-content-center active' : 'scroll-top d-flex align-items-center justify-content-center'"><i class="bi bi-arrow-up-short"></i></a>
+
+    <div id="preloader" :class="loading ? 'd-block' : 'd-none'"></div>
+
   </div>
-  <HelloWorld msg="Vite + Vue" />
+
+ 
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+/* Optional: your custom styles */
 </style>
