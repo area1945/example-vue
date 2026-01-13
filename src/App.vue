@@ -16,6 +16,10 @@
   const section = ref<string>("home")
   const sections = ref<Array<string>>(["hero", "about", "clients", "cards", "services", "call-to-action", "portfolio", "pricing", "faq", "team", "contact"])
 
+  const setHomeSection = (val:string) => {
+     section.value = val
+  }
+
   const handleScroll = () => {
 
     const position = window.scrollY + 200;
@@ -102,7 +106,14 @@
   <div :class="bodyClasses.join(' ')">
 
     <header id="header" class="header d-flex align-items-center sticky-top">
-      <HeaderComponent @toggledDropdown="toggledDropdownHandle" @mobileNavToogle="mobileNavToogle" :section="section"  :toggledDropdown="toggledDropdown" :mobileNav="mobileNav" />
+      <HeaderComponent 
+        @toggledDropdown="toggledDropdownHandle" 
+        @mobileNavToogle="mobileNavToogle" 
+        :section="section"  
+        :toggledDropdown="toggledDropdown" 
+        :mobileNav="mobileNav" 
+        :setHomeSection="setHomeSection"
+      />
     </header>
 
     <main class="main">

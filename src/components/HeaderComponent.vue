@@ -1,10 +1,15 @@
 <script setup lang="ts">
 
     import { useRoute } from 'vue-router'
+   
 
     const route = useRoute()
     const currentPath = route.path
-    const emit = defineEmits<{(e: 'toggledDropdown', event: MouseEvent): void, (e: 'mobileNavToogle', event: MouseEvent): void}>()
+    const emit = defineEmits<{
+      (e: 'toggledDropdown', event: MouseEvent): void, 
+      (e: 'mobileNavToogle', event: MouseEvent): void,
+      (e: 'setHomeSection', val: string): void
+    }>()
     const props = defineProps<{ toggledDropdown: boolean, mobileNav: boolean, section: string }>()
 
     const toggledDropdownHandle = (event: MouseEvent) => {
@@ -15,7 +20,29 @@
         emit('mobileNavToogle', event)
     }
 
-    
+    const handleClickMenu = (event: MouseEvent) => {
+        event.preventDefault()
+
+        const element = event.target as HTMLElement;
+        const href = element.getAttribute('href');
+        
+        if (element.classList.contains('mobile-nav-active')) {
+          mobileNavToogle(event);
+        }
+
+        if(href){
+
+          const target = document.querySelector(href);
+
+          if(target){
+            const sectionHome = href.replace(/#/g, "");
+            emit('setHomeSection', sectionHome)
+            target?.scrollIntoView({ behavior: 'smooth' });
+          }
+
+        }
+
+    }
 
 
 </script>
@@ -32,12 +59,12 @@
         <nav id="navmenu" class="navmenu">
           <ul>
             <template v-if="currentPath === '/'">
-                <li><a href="#hero" :class="section === 'home' ? 'active' : ''">Home</a></li>
-                <li><a href="#about" :class="section === 'about' ? 'active' : ''">About</a></li>
-                <li><a href="#services" :class="section === 'services' ? 'active' : ''">Services</a></li>
-                <li><a href="#portfolio" :class="section === 'portfolio' ? 'active' : ''">Portfolio</a></li>
-                <li><a href="#team" :class="section === 'team' ? 'active' : ''">Team</a></li>
-                <li><a href="#contact" :class="section === 'contact' ? 'active' : ''">Contact</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#hero" :class="section === 'home' || section === 'hero' ? 'active' : ''">Home</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#about" :class="section === 'about' ? 'active' : ''">About</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#services" :class="section === 'services' ? 'active' : ''">Services</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#portfolio" :class="section === 'portfolio' ? 'active' : ''">Portfolio</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#team" :class="section === 'team' ? 'active' : ''">Team</a></li>
+                <li><a @click.prevent="handleClickMenu" href="#contact" :class="section === 'contact' ? 'active' : ''">Contact</a></li>
             </template>
             <template v-else>
                 <li><router-link to="/">Home</router-link></li>
