@@ -4,7 +4,6 @@
    
 
     const route = useRoute()
-    const currentPath = route.path
     const emit = defineEmits<{
       (e: 'toggledDropdown', event: MouseEvent): void, 
       (e: 'mobileNavToogle', event: MouseEvent): void,
@@ -44,6 +43,11 @@
 
     }
 
+    const isAuthToutes = () => {
+      const auths = ["Login", "Register", "ForgotPassword", "ResetPassword"]
+      return typeof route.name === 'string'? auths.includes(route.name) : false
+    }
+ 
 
 </script>
 
@@ -58,7 +62,7 @@
 
         <nav id="navmenu" class="navmenu">
           <ul>
-            <template v-if="currentPath === '/'">
+            <template v-if="route.name === 'Home'">
                 <li><a @click.prevent="handleClickMenu" href="#hero" :class="section === 'home' || section === 'hero' ? 'active' : ''">Home</a></li>
                 <li><a @click.prevent="handleClickMenu" href="#about" :class="section === 'about' ? 'active' : ''">About</a></li>
                 <li><a @click.prevent="handleClickMenu" href="#services" :class="section === 'services' ? 'active' : ''">Services</a></li>
@@ -68,13 +72,13 @@
             </template>
             <template v-else>
                 <li><router-link to="/">Home</router-link></li>
-                <li><router-link to="/about">About</router-link></li>
-                <li><router-link to="/service">Services</router-link></li>
-                <li><router-link to="/portfolio">Portfolio</router-link></li>
-                <li><router-link to="/team">Team</router-link></li>
-                <li><router-link to="/contact">Contact</router-link></li>
+                <li><router-link to="/about" :class="route.name === 'About' ? 'active' : ''">About</router-link></li>
+                <li><router-link to="/service" :class="route.name === 'Service' || route.name === 'ServiceDetail' ? 'active' : ''">Services</router-link></li>
+                <li><router-link to="/portfolio" :class="route.name === 'Portfolio' || route.name === 'PortfolioDetail' ? 'active' : ''">Portfolio</router-link></li>
+                <li><router-link to="/team" :class="route.name === 'Team' ? 'active' : ''">Team</router-link></li>
+                <li><router-link to="/contact" :class="route.name === 'Contact' ? 'active' : ''">Contact</router-link></li>
             </template>
-            <li :class="toggledDropdown ? 'dropdown active' : 'dropdown'"><a href="#" @click.prevent="toggledDropdownHandle"><span>Authentication</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+            <li :class="toggledDropdown || isAuthToutes() ? 'dropdown active' : 'dropdown'"><a href="#" @click.prevent="toggledDropdownHandle"><span>Authentication</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
               <ul :class="toggledDropdown ? 'dropdown-active' : ''">
                 <li><router-link to="/auth/login">Sign In</router-link></li>
                 <li><router-link to="/auth/register">Sign Up</router-link></li>

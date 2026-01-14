@@ -8,5 +8,6 @@ import './style.css'
 
 
 const app = createApp(App)
+app.config.globalProperties.$siteTitle = 'Company Profile'
 app.config.globalProperties.$assetUrl = 'https://area1945.github.io/example-template/assets'
 app.use(router).mount('#app')

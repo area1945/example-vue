@@ -16,7 +16,7 @@
       <nav class="breadcrumbs">
         <div class="container">
           <ol>
-            <li><a href="index.html">Home</a></li>
+            <li><router-link to="/">Home</router-link></li>
             <li class="current">Starter Page</li>
           </ol>
         </div>
